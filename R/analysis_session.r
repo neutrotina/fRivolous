@@ -17,12 +17,15 @@
     )
   }
 
-  output <- system2(
+output <- suppressWarnings(
+  system2(
     command = "git",
     args = c("-C", project, args),
     stdout = TRUE,
     stderr = TRUE
   )
+)
+
 
   status <- attr(
     output,
@@ -128,8 +131,7 @@
 #'   log is created under `project/logs`.
 #' @param activate_renv Logical; should [renv::activate()] be called?
 #'
-#' @return An object of class `"Analysis_session"` containing the
-#'   project path, log path, start time, output connection and initial Git
+#' @return An object of class `"Analysis_session"` containing the project path, log path, start time, output connection and initial Git
 #'   state.
 #'
 #' @section Side effects:
@@ -139,11 +141,10 @@
 #' @examples
 #' \dontrun{
 #' session <- start_analysis(
-#'   project = here::here(),
-#'   log_file = here::here(
-#'     "logs",
-#'     "analysis_session.log"
-#'   )
+#'   project = getwd(),
+#'   log_file =
+#'     c("logs",
+#'     "analysis_session.log")
 #' )
 #' }
 #'
@@ -309,10 +310,7 @@ call. = FALSE
 
 #' End an analysis session
 #'
-#' Completes an analysis session using [objective_complete()], closes the
-#' analysis log sink, and optionally snapshots `renv` and creates an explicitly
-#' scoped Git commit.
-#'
+#' Completes an analysis session using [objective_complete()], closes the analysis log sink, and optionally snapshots `renv` and creates an explicitly scoped Git commit.
 #' @param session An object returned by [start_analysis()].
 #' @param snapshot_renv Logical; should [renv::snapshot()] be called before
 #'   completing the session?

@@ -210,25 +210,62 @@ testthat::test_that(
       "unique, non-empty names"
     )
 
-    testthat::expect_error(
-      load_data_files(
-        file_list = c(
-          first = "one.csv",
-          second = "two.csv"
-        )
-      ),
-      "unique, non-empty names"
-    )
+result <- load_data_files(
+  file_list = c(
+    first = "one.csv",
+    second = "two.csv"
+  ),
+  assign_to_global = FALSE,
+  print_dims = FALSE,
+  print_parameters = FALSE
+)
 
-    testthat::expect_error(
-      load_data_files(
-        file_list = c(
-          duplicate = "one.csv",
-          duplicate = "two.csv"
-        )
-      ),
-      "unique, non-empty names"
-    )
+testthat::expect_identical(
+  result$missing,
+  c(
+    "first",
+    "second"
+  )
+)
+
+testthat::expect_length(
+  result$data,
+  0L
+)
+
+testthat::expect_length(
+  result$failed,
+  0L
+)
+
+testthat::expect_error(
+  fRivolous:::load_data_files(
+    file_list = c(
+      "one.csv",
+      "two.csv"
+    ),
+    assign_to_global = FALSE,
+    print_dims = FALSE,
+    print_parameters = FALSE
+  ),
+  regexp = "unique, non-empty names"
+)
+
+
+testthat::expect_error(
+  fRivolous:::load_data_files(
+    file_list = c(
+      first = "one.csv",
+      first = "two.csv"
+    ),
+    assign_to_global = FALSE,
+    print_dims = FALSE,
+    print_parameters = FALSE
+  ),
+  regexp = "unique, non-empty names"
+)
+
+
   }
 )
 

@@ -247,7 +247,7 @@ transferred <- file.copy(
   }
 
   cat(
-    "    >> [✔️] FILE ",
+    "    >> [\u2713] FILE ",
     toupper(operation),
     " COMPLETE.\n",
     sep = ""
@@ -299,10 +299,18 @@ transferred <- file.copy(
 #'   "example file",
 #'   example_source
 #' )
+#' example_target_dir <- tempfile(
+#' pattern = "copy_data_file_target_"
+#' )
+#' dir.create(
+#' example_target_dir,
+#' recursive = TRUE,
+#' showWarnings = FALSE
+#' )
 #'
 #' copy_result <- copy_data_file(
 #'   source_file = example_source,
-#'   target_dir = tempdir()
+#'   target_dir = example_target_dir
 #' )
 #'
 #' @export
@@ -340,10 +348,17 @@ copy_data_file <- function(
 #'   "example file",
 #'   example_source
 #' )
-#'
+#' example_target_dir <- tempfile(
+#' pattern = "copy_data_file_target_"
+#' )
+#' dir.create(
+#' example_target_dir,
+#' recursive = TRUE,
+#' showWarnings = FALSE
+#' )
 #' move_result <- move_data_file(
 #'   source_file = example_source,
-#'   target_dir = tempdir()
+#'   target_dir = example_target_dir
 #' )
 #'
 #' @export

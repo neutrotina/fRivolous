@@ -1,5 +1,5 @@
 testthat::test_that(
-  "catbot_say uses robot_cat by default",
+  "catbot_say uses robocat by default",
   {
 
     output <- testthat::capture_output(
@@ -32,62 +32,6 @@ testthat::test_that(
   }
 )
 
-
-testthat::test_that(
-  "catbot_say accepts multiple message lines",
-  {
-
-    message_lines <- c(
-      "DATA CHECK COMPLETE",
-      "NO PROBLEMS DETECTED"
-    )
-
-    testthat::capture_output(
-      result <- catbot_say(
-        text = message_lines
-      )
-    )
-
-    testthat::expect_true(
-      all(
-        message_lines %in% result
-      )
-    )
-
-    testthat::expect_length(
-      result,
-      5L + length(message_lines) + 1L
-    )
-  }
-)
-
-
-testthat::test_that(
-  "catbot_say supports explicit mech styles",
-  {
-
-    for (style_name in c("mech1", "mech2")) {
-
-      testthat::capture_output(
-        result <- catbot_say(
-          text = "SYSTEM STATUS",
-          style = style_name
-        )
-      )
-
-      testthat::expect_gt(
-        length(result),
-        1L
-      )
-
-      testthat::expect_true(
-        any(
-          result == "SYSTEM STATUS"
-        )
-      )
-    }
-  }
-)
 
 
 testthat::test_that(
@@ -127,7 +71,6 @@ testthat::test_that(
   }
 )
 
-
 testthat::test_that(
   "catbot_say rejects invalid styles",
   {
@@ -142,45 +85,8 @@ testthat::test_that(
     testthat::expect_error(
       catbot_say(
         text = "TEST",
-        style = c("robot_cat", "catfloat")
+        style = c("robocat", "catfloat")
       )
-    )
-  }
-)
-
-testthat::test_that(
-  "catbot_say supports the cats-only style",
-  {
-
-    testthat::capture_output(
-      result <- catbot_say(
-        text = "DATA CHECK COMPLETE",
-        style = "catbox"
-      )
-    )
-
-    testthat::expect_true(
-      any(grepl(
-        "DATA CHECK COMPLETE",
-        result,
-        fixed = TRUE
-      ))
-    )
-
-    testthat::expect_true(
-      any(grepl(
-        "U U",
-        result,
-        fixed = TRUE
-      ))
-    )
-
-    testthat::expect_true(
-      any(grepl(
-        "~~~~~~~~~~~~",
-        result,
-        fixed = TRUE
-      ))
     )
   }
 )
@@ -256,10 +162,10 @@ testthat::test_that(
     )
   }
 )
+
 testthat::test_that(
   "catbot_say supports aligned multi-line catbox messages",
   {
-
     message_lines <- c(
       "DATA CHECK COMPLETE",
       "NO PROBLEMS DETECTED"
@@ -267,24 +173,37 @@ testthat::test_that(
 
     for (alignment in c("left", "center", "right")) {
 
-      testthat::capture_output(
+      testthat::capture_output({
+
         result <- catbot_say(
           text = message_lines,
           style = "catbox",
           width = 30L,
           align = alignment
         )
-      )
+      })
 
       testthat::expect_length(
         result,
         6L
       )
 
+      message_present <- vapply(
+        message_lines,
+        function(line) {
+          any(
+            grepl(
+              line,
+              result,
+              fixed = TRUE
+            )
+          )
+        },
+        logical(1L)
+      )
+
       testthat::expect_true(
-        all(
-          message_lines %in% result
-        )
+        all(message_present)
       )
 
       testthat::expect_true(

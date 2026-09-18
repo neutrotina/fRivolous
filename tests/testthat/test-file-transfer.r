@@ -1,3 +1,20 @@
+
+new_test_dir <- function(
+    pattern
+) {
+  path <- tempfile(
+    pattern = pattern
+  )
+
+  dir.create(
+    path,
+    recursive = TRUE,
+    showWarnings = FALSE
+  )
+
+  path
+}
+
 testthat::test_that(
   "copy_data_file copies a file and retains the source",
   {
@@ -181,24 +198,8 @@ testthat::test_that(
 testthat::test_that(
   "file transfer refuses to overwrite by default",
   {
-
     source_file <- tempfile(
-      "overwrite_source_",
       fileext = ".txt"
-    )
-
-    target_dir <- tempfile(
-      "overwrite_target_"
-    )
-
-    destination_file <- file.path(
-      target_dir,
-      "result.txt"
-    )
-
-    dir.create(
-      target_dir,
-      recursive = TRUE
     )
 
     writeLines(
@@ -206,28 +207,92 @@ testthat::test_that(
       source_file
     )
 
+    target_dir <- file.path(
+      tempdir(),
+      "overwrite_target"
+    )
+
+    dir.create(
+      target_dir,
+      recursive = TRUE,
+      showWarnings = FALSE
+    )
+
+    destination_file <- file.path(
+      target_dir,
+      "result.txt"
+    )
+
     writeLines(
-      "old content",
+      "original content",
       destination_file
     )
 
     testthat::expect_error(
-      copy_data_file(
+      fRivolous::copy_data_file(
         source_file = source_file,
         target_dir = target_dir,
-        destination_name = "result.txt",
-        overwrite = FALSE
+        destination_name = "result.txt"
       ),
-      "overwrite = FALSE"
+      "Destination file already exists"
     )
 
     testthat::expect_identical(
       readLines(destination_file),
-      "old content"
+      "original content"
+    )
+  }
+)
+
+testthat::test_that(
+  "file transfer overwrites when requested",
+  {
+    source_file <- tempfile(
+      fileext = ".txt"
     )
 
-    testthat::capture_output(
-      result <- copy_data_file(
+    writeLines(
+      "new content",
+      source_file
+    )
+
+    target_dir <- new_test_dir(
+      pattern = "overwrite_target_"
+    )
+
+    destination_file <- file.path(
+      target_dir,
+      "result.txt"
+    )
+
+    writeLines(
+      "original content",
+      destination_file
+    )
+
+    result <- NULL
+
+    utils::capture.output({
+
+      result <- fRivolous::copy_data_file(
         source_file = source_file,
         target_dir = target_dir,
         destination_name = "result.txt",
+        overwrite = TRUE
+      )
+    })
+
+    testthat::expect_true(
+      result$overwritten
+    )
+
+    testthat::expect_identical(
+      readLines(destination_file),
+      "new content"
+    )
+
+    testthat::expect_true(
+      file.exists(source_file)
+    )
+  }
+)

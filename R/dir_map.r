@@ -16,7 +16,7 @@
 #'   printed?
 #' @param tree Logical; should the complete directory tree be printed after
 #'   creation?
-#' @param include_files Logical; when `tree = TRUE`, should files be included
+#' @param show_files Logical; when `tree = TRUE`, should files be included
 #'   in the printed directory tree? This does not affect directory creation.
 #'
 #' @return Invisibly returns a list with components:
@@ -25,7 +25,7 @@
 #'   absolute path, generated variable and depth.}
 #'   \item{paths}{A named character vector of generated directory paths.}
 #' }
-#'
+#' @export
 #' @examples
 #' project_dirs <- list(
 #'   data = list(
@@ -49,7 +49,7 @@
 #'   assign_global = FALSE,
 #'   print_sub_dirs = FALSE,
 #'   tree = TRUE,
-#'   include_files = FALSE
+#'   show_files = FALSE
 #' )
 make_dirs <- function(
     directory_tree,
@@ -440,7 +440,11 @@ if (
     cat("\n")
     cat("DIRECTORY TREE:\n\n")
 
-    directory_map(parent)
+directory_map(
+  path = parent,
+  show_files = show_files
+)
+
   }
 
 
@@ -466,12 +470,12 @@ if (
 #'   `Inf`, displays the complete tree.
 #' @param include_hidden Logical; should hidden files and directories be
 #'   included?
-#' @param include_files Logical; should files be included? If `FALSE`, only
+#' @param show_files Logical; should files be included? If `FALSE`, only
 #'   directories are shown.
 #'
 #' @return Invisibly returns a character vector containing the printed tree
 #'   lines.
-#'
+#' @export
 #' @examples
 #' example_root <- file.path(
 #'   tempdir(),
@@ -491,7 +495,7 @@ if (
 #'
 #' directory_map(
 #'   path = example_root,
-#'   include_files = FALSE
+#'   show_files = FALSE
 #' )
 directory_map <- function(
     path = ".",
@@ -586,9 +590,9 @@ if (!isTRUE(show_files)) {
       is_last <- i == length(entries)
 
       branch <- if (is_last) {
-        "└── "
+        "\u2514\u2500\u2500 "
       } else {
-        "├── "
+        "\u251C\u2500\u2500 "
       }
 
       suffix <- if (entry_is_directory) {
@@ -615,7 +619,7 @@ if (!isTRUE(show_files)) {
         child_prefix <- if (is_last) {
           paste0(prefix, "    ")
         } else {
-          paste0(prefix, "│   ")
+          paste0(prefix, "\u2502   ")
         }
 
         walk_directory(
@@ -645,35 +649,3 @@ if (!isTRUE(show_files)) {
 }
 
 
-
-# USAGE
-
-# add directories to a list
-
-#project_dirs <- list(
-  #VITREOUS = list(
-  #  PCA = NULL,
- #   Diagnostics = NULL,
- #   Residuals = NULL,
-#  Comorbidity = NULL,
-  #  GO = NULL
- # ),
-
- # SERUM = list(
- #   PCA = NULL,
- #   Diagnostics = NULL,
-  #  Residuals = NULL,
-  #  Comorbidity = NULL,
- #   GO = NULL
-#  )
-#)
-
-
-## RUN THE FUNCTION
-
-#created_dirs <- make_dirs(
-#  directory_tree = project_dirs,
-#  parent = getwd(),
-#  print_sub_dirs = TRUE,
- # tree = TRUE
-#)

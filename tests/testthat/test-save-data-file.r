@@ -1,3 +1,20 @@
+new_test_dir <- function(
+    pattern
+) {
+  path <- tempfile(
+    pattern = pattern
+  )
+
+  dir.create(
+    path,
+    recursive = TRUE,
+    showWarnings = FALSE
+  )
+
+  path
+}
+
+
 testthat::test_that(
   "save_data_file reports new and overwritten files correctly",
   {
@@ -65,25 +82,31 @@ testthat::test_that(
   }
 )
 
-
 testthat::test_that(
   "save_data_file creates missing parent directories",
   {
+    test_dir <- new_test_dir(
+      pattern = "save_data_file_test_"
+    )
 
     filename <- file.path(
-      tempdir(),
-      "save_data_file_test",
+      test_dir,
       "nested",
       "result.rds"
     )
 
-    testthat::capture_output(
+    result <- NULL
+
+    utils::capture.output({
+
       result <- save_data_file(
-        df = data.frame(value = 1:3),
+        df = data.frame(
+          value = 1:3
+        ),
         filename = filename,
         overwrite = FALSE
       )
-    )
+    })
 
     testthat::expect_true(
       file.exists(filename)
@@ -103,6 +126,7 @@ testthat::test_that(
     )
   }
 )
+
 
 
 testthat::test_that(
@@ -151,9 +175,6 @@ testthat::test_that(
       )
     )
 
-    testthat::expect_true(
-      result$archived %in% c(FALSE, TRUE)
-    )
 
     testthat::expect_true(
       file.exists(result$path)

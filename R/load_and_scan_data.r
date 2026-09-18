@@ -27,7 +27,7 @@
 #' @section Side effects:
 #' If `assign_to_global = TRUE`, successfully imported objects are assigned to
 #' the specified environment.
-#'
+#' @export
 #' @examples
 #' example_data <- data.frame(
 #'   sample = c("A", "B"),
@@ -128,17 +128,17 @@ load_data_files <- function(
         switch(
           ext,
           rds = readRDS(path),
-          csv = read.csv(
+          csv = utils::read.csv(
             path,
             stringsAsFactors = FALSE,
             check.names = FALSE
           ),
-          tsv = read.delim(
+          tsv = utils::read.delim(
             path,
             stringsAsFactors = FALSE,
             check.names = FALSE
           ),
-          txt = read.delim(
+          txt = utils::read.delim(
             path,
             stringsAsFactors = FALSE,
             check.names = FALSE
@@ -209,7 +209,7 @@ load_data_files <- function(
     )
 
     cat(
-      "    >> [✔️] DATA LOAD SUCCESSFUL ",
+      "    >> [\u2713] DATA LOAD SUCCESSFUL ",
       "(Format: ",
       toupper(ext),
       ")\n",
@@ -250,7 +250,7 @@ load_data_files <- function(
   }
 
   cat(
-    "\n    >> [✔️] DATA LOADING COMPLETE\n"
+    "\n    >> [\u2713] DATA LOADING COMPLETE\n"
   )
 
   if (length(missing_files) > 0L) {
@@ -310,7 +310,7 @@ failed_files,
 #'   data frame.}
 #'   \item{duplicate_rows}{Number of duplicated rows.}
 #' }
-#'
+#' @export
 #' @examples
 #' example_data <- data.frame(
 #'   sample = c("A", "B", "B"),
@@ -353,7 +353,7 @@ data_check <- function(
   cat(
     "\n[+] INITIATING DATA CHECK: ",
     object_name,
-    " ......... ▷\n",
+    " ......... \u25B7\n",
     sep = ""
   )
 
@@ -377,7 +377,7 @@ data_check <- function(
   )
 
   duplicate_status <- if (duplicate_count == 0L) {
-    "[✔️] CLEAN"
+    "[\u2713] CLEAN"
   } else {
     paste(
       "[!] ",
@@ -411,7 +411,7 @@ data_check <- function(
     )
 
     status <- if (missing_count == 0L) {
-      "[✔️]"
+      "[\u2713]"
     } else {
       "[!]"
     }
@@ -438,21 +438,21 @@ data_check <- function(
 
         cat(
           sprintf(
-            "       └─ RANGE: [%s to %s]\n",
+            "       	\u2514\u2500 RANGE: [%s to %s]\n",
             value_range[1L],
             value_range[2L]
           )
         )
       } else {
         cat(
-          "       └─ RANGE: Not available; all values are missing\n"
+          "       	\u2514\u2500 RANGE: Not available; all values are missing\n"
         )
       }
     }
   }
 
   cat(
-    "\n[✔️] DATA CHECK COMPLETE ............[✔️]\n"
+    "\n[\u2713] DATA CHECK COMPLETE ............[\u2713]\n"
   )
 
   cat(

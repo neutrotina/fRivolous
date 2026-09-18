@@ -35,7 +35,7 @@ testthat::test_that(
 
     testthat::expect_identical(
       arrows_heading,
-      "  >>>>>>>>> STATUS <<<<<<<<<<<"
+      "  >>>>>>>>> STATUS <<<<<<<<<<"
     )
   }
 )

@@ -154,10 +154,12 @@ testthat::test_that(
       recursive = TRUE
     )
 
-    dir.create(
-      source_subdirectory,
-      recursive = TRUE
-    )
+   dir.create(
+  source_subdirectory,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
 
     writeLines(
       "target file",

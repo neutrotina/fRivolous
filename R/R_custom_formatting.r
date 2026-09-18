@@ -41,7 +41,7 @@ add_h <- function(
     ),
     arrows = list(
     prefix = "  >>>>>>>>>",
-    suffix = "<<<<<<<<<<<"
+    suffix = " <<<<<<<<<<"
     )
     )
 
@@ -146,14 +146,14 @@ add_subh <- function(
 
   subheading_styles <- list(
     arrow = list(
-      prefix = "▷▷▷ ",
-      suffix = " ▷",
+      prefix = "\u25B7\u25B7\u25B7 ",
+      suffix = " \u25B7",
       fill = "."
     ),
     double_arrow = list(
-      prefix = "»» ",
-      suffix = " «",
-      fill = "·"
+      prefix = "\u00BB\u00BB ",
+      suffix = " \u00AB",
+      fill = "."
     ),
     bracket = list(
       prefix = "[+] ",
@@ -161,23 +161,23 @@ add_subh <- function(
       fill = "-"
     ),
       ok = list(
-      prefix = "▷ ",
-      suffix = " [✔OK]",
+      prefix = "\u25B7 ",
+      suffix = " [\u2714 OK]",
       fill = "."
       ),
    neg = list(
    prefix = "[!] ",
-      suffix = " [✘]",
+      suffix = " [x]",
       fill = "."
    ),
 load = list(
-   prefix = "[⚙] --- ",
-      suffix = " --- [⚙]",
+   prefix = "[\u2699] --- ",
+      suffix = " --- [\u2699]",
       fill = "."
    ),
   basic = list(
-   prefix = " ▷ ",
-      suffix = " ◁",
+   prefix = " \u25B7 ",
+      suffix = " \u25C1",
       fill = " "
    )
   )
@@ -267,7 +267,7 @@ load = list(
   )
 }
 
-#'
+
 #' Add formatted separators to R output
 #'
 #' @param opt Separator style, supplied as a number or name.
@@ -309,12 +309,12 @@ add_sep <- function(
       left = "",
       right = "",
       symbol = "="
-    )
+    ),
     block = list(
       left = "[ ",
       right = " ]",
-      symbol = "░"
-    ),
+      symbol = "\u2591"
+    )
   )
 
   if (
@@ -487,13 +487,13 @@ add_box <- function(
     style == "unicode"
   ) {
     border <- list(
-      top_left = "╔",
-      top = "═",
-      top_right = "╗",
-      side = "║",
-      bottom_left = "╚",
-      bottom = "═",
-      bottom_right = "╝"
+      top_left = "\u2554",
+      top = "\u2550",
+      top_right = "\u2557",
+      side = "\u2551",
+      bottom_left = "\u255A",
+      bottom = "\u2550",
+      bottom_right = "\u255D"
     )
   } else {
     border <- list(
@@ -599,8 +599,7 @@ add_box <- function(
     output
   )
 }
-#'
-#' ADD the current date and time in a box
+#' Add the current date and time in a box
 #'
 #' @param time A date-time object. Defaults to the current time.
 #' @param date_format Format passed to [base::format()] for the date.
@@ -787,7 +786,7 @@ if (
   ) {
     status_labels <- ifelse(
       done,
-      "[✓]",
+      "[\u2713]",
       "[ ]"
     )
 
@@ -838,8 +837,8 @@ if (any(dot_width < 1L)) {
   } else {
     status_labels <- ifelse(
       done,
-      "✓",
-      "☐"
+      "\u2713",
+      "\u2610"
     )
 
     output <- paste0(
@@ -890,11 +889,11 @@ if (any(dot_width < 1L)) {
 #'   ),
 #'   right = c(
 #'     "LINEAR MIXED EFFECTS MODEL",
-#'     "AMD v Control",
+#'     "TREATED v Control",
 #'     "EMMEANS",
 #'     "COMORBIDITY: TRUE",
 #'     "COMORBIDITY: FALSE",
-#'     "endo vs control"
+#'     "treated vs control"
 #'   )
 #' )
 add_key_list <- function(

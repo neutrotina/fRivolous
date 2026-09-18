@@ -22,7 +22,7 @@ testthat::test_that(
       assign_global = FALSE,
       print_sub_dirs = FALSE,
       tree = FALSE,
-      include_files = FALSE
+      show_files = FALSE
     )
 
     expected_paths <- file.path(
@@ -79,7 +79,7 @@ testthat::test_that(
     folders_only <- testthat::capture_output(
       folder_tree <- directory_map(
         path = parent,
-        include_files = FALSE
+        show_files = FALSE
       )
     )
 
@@ -94,7 +94,7 @@ testthat::test_that(
     with_files <- testthat::capture_output(
       complete_tree <- directory_map(
         path = parent,
-        include_files = TRUE
+        show_files = TRUE
       )
     )
 
@@ -110,7 +110,7 @@ testthat::test_that(
 
 
 testthat::test_that(
-  "make_dirs passes include_files to directory_map",
+  "make_dirs passes show_files to directory_map",
   {
 
     parent <- tempfile("make_dirs_tree_test_")
@@ -134,7 +134,7 @@ testthat::test_that(
         assign_global = FALSE,
         print_sub_dirs = FALSE,
         tree = TRUE,
-        include_files = FALSE
+        show_files = FALSE
       )
     )
 
@@ -150,23 +150,23 @@ testthat::test_that(
 
 
 testthat::test_that(
-  "directory functions reject invalid include_files values",
+  "directory functions reject invalid show_files values",
   {
 
     testthat::expect_error(
       directory_map(
         path = tempdir(),
-        include_files = c(TRUE, FALSE)
+        show_files = c(TRUE, FALSE)
       ),
-      "include_files"
+      "show_files"
     )
 
     testthat::expect_error(
       directory_map(
         path = tempdir(),
-        include_files = NA
+        show_files = NA
       ),
-      "include_files"
+      "show_files"
     )
 
     testthat::expect_error(
@@ -175,9 +175,9 @@ testthat::test_that(
           results = NULL
         ),
         parent = tempdir(),
-        include_files = "no"
+        show_files = "no"
       ),
-      "include_files"
+      "show_files"
     )
   }
 )

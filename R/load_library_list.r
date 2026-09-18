@@ -16,7 +16,7 @@
 #' Missing packages are installed using [utils::install.packages()] with
 #' `dependencies = TRUE`. Packages are then attached to the search path using
 #' [base::library()].
-#'
+#' @export
 #' @examples
 #' packages <- c(
 #'   "stats",
@@ -32,9 +32,11 @@
 load_library_list <- function(
     lib_list
 ) {
-  if (!is.character(lib_list) ||
+  if (
+    !is.character(lib_list) ||
       length(lib_list) == 0L ||
-      anyNA(lib_list)) {
+      anyNA(lib_list)
+  ) {
     stop(
       "'lib_list' must be a non-empty character vector.",
       call. = FALSE
@@ -49,12 +51,12 @@ load_library_list <- function(
     nzchar(lib_list)
   ]
 
-if (length(lib_list) == 0L) {
-  stop(
-    "'lib_list' must contain at least one non-empty package name.",
-    call. = FALSE
-  )
-}
+  if (length(lib_list) == 0L) {
+    stop(
+      "'lib_list' must contain at least one non-empty package name.",
+      call. = FALSE
+    )
+  }
 
   cat(
     "    > Adding installed packages.......\n"
@@ -65,7 +67,7 @@ if (length(lib_list) == 0L) {
   )
 
   installed_packages <- rownames(
-    installed.packages()
+    utils::installed.packages()
   )
 
   install_if_missing <- setdiff(
@@ -80,7 +82,7 @@ if (length(lib_list) == 0L) {
       sep = ""
     )
 
-    install.packages(
+    utils::install.packages(
       install_if_missing,
       dependencies = TRUE,
       quiet = TRUE
@@ -97,7 +99,7 @@ if (length(lib_list) == 0L) {
 
   for (pkg in lib_list) {
     suppressPackageStartupMessages(
-      library(
+      base::library(
         pkg,
         character.only = TRUE
       )
@@ -106,13 +108,13 @@ if (length(lib_list) == 0L) {
     cat(
       "      [+] LOADING: ",
       pkg,
-      " ... [✔️]\n",
+      " ... [\u2713]\n",
       sep = ""
     )
   }
 
   cat(
-    "    >>> [✔️] Loading complete [✔️]\n"
+    "    >>> [\u2713] Loading complete [\u2713]\n"
   )
 
   cat(

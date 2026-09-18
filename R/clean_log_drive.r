@@ -6,8 +6,9 @@
 #' directory are still created and the function reports that the drive is
 #' clear.
 #'
-#' @param target_dir Directory containing the output file. The directory and
-#'   its `FAILURE_ARCHIVE` subdirectory are created if necessary.
+#' @param target_dir Directory containing the output file. Defaults to the
+#'   current working directory. The directory and its `FAILURE_ARCHIVE`
+#'   subdirectory are created if necessary.
 #' @param object_file File path whose basename should be searched for in
 #'   `target_dir`. Only the basename is used as the target filename.
 #'
@@ -24,7 +25,7 @@
 #' The target directory and `FAILURE_ARCHIVE` subdirectory may be created.
 #' Existing target files are moved into the archive directory and are not
 #' overwritten.
-#'
+#' @export
 #' @examples
 #' example_dir <- file.path(
 #'   tempdir(),
@@ -52,7 +53,7 @@
 #'   object_file = example_file
 #' )
 clean_log_drive <- function(
-    target_dir = here::here(),
+    target_dir = getwd(),
     object_file
 ) {
   if (!is.character(target_dir) ||
@@ -136,7 +137,7 @@ clean_log_drive <- function(
 
   if (!file.exists(target_path)) {
     cat(
-      "    >> [✔️] DRIVE CLEAR. Proceed.\n"
+      "    >> [\u2713] DRIVE CLEAR. Proceed.\n"
     )
 
     cat(
@@ -214,7 +215,7 @@ clean_log_drive <- function(
   }
 
   cat(
-    "    >> [✔️] DRIVE SECURED. Old intel moved to archive.\n"
+    "    >> [\u2713] DRIVE SECURED. Old intel moved to archive.\n"
   )
 
   cat(
@@ -237,9 +238,9 @@ clean_log_drive <- function(
   )
 }
 
-
 # USAGE
 # clean_log_drive(
-#  target_dir = here::here(),
-#  object_file = objec_file
-#)
+#   target_dir = getwd(),
+#   object_file = object_file
+# )
+

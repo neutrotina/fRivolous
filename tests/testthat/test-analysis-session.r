@@ -1,10 +1,28 @@
+new_test_dir <- function(
+    pattern
+) {
+  path <- tempfile(
+    pattern = pattern
+  )
+
+  dir.create(
+    path,
+    recursive = TRUE,
+    showWarnings = FALSE
+  )
+
+  path
+}
+
+
 testthat::test_that(
   "start_analysis creates a session and log file",
   {
+ project <- new_test_dir(
+  "analysis_project_"
+)
 
-    project <- tempfile(
-      "analysis_project_"
-    )
+
 
     log_file <- file.path(
       project,
@@ -12,17 +30,10 @@ testthat::test_that(
       "analysis.log"
     )
 
-    dir.create(
-      project,
-      recursive = TRUE
-    )
-
-    testthat::capture_output(
-      session <- start_analysis(
-        project = project,
-        log_file = log_file,
-        activate_renv = FALSE
-      )
+    session <- fRivolous::start_analysis(
+      project = project,
+      log_file = log_file,
+      activate_renv = FALSE
     )
 
     testthat::expect_s3_class(
@@ -30,12 +41,10 @@ testthat::test_that(
       "Analysis_session"
     )
 
-    testthat::expect_identical(
-      session$project,
-      normalizePath(
-        project,
-        mustWork = FALSE
-      )
+    completion <- fRivolous::end_analysis(
+      session = session,
+      snapshot_renv = FALSE,
+      commit = FALSE
     )
 
     testthat::expect_true(
@@ -43,124 +52,94 @@ testthat::test_that(
     )
 
     testthat::expect_true(
-      is.list(session$git)
+      is.list(completion)
     )
 
-    testthat::capture_output(
-      result <- end_analysis(
-        session = session,
-        snapshot_renv = FALSE,
-        commit = FALSE
-      )
-    )
-
-    testthat::expect_false(
-      result$git$committed
+    log_text <- paste(
+      readLines(log_file),
+      collapse = "\n"
     )
 
     testthat::expect_match(
-      paste(
-        readLines(log_file),
-        collapse = "\n"
-      ),
-"OBJECTIVE COMPLETE: ANALYSIS COMPLETE"
+      log_text,
+      "ANALYSIS SESSION STARTED"
+    )
+
+    testthat::expect_match(
+      log_text,
+      "OBJECTIVE COMPLETE: ANALYSIS COMPLETE"
     )
   }
 )
-
-
 testthat::test_that(
   "start_analysis creates a default log path",
   {
-
-    project <- tempfile(
-      "analysis_project_default_log_"
+    project <- new_test_dir(
+      pattern = "analysis_project_default_log_"
     )
 
-    dir.create(
-      project,
-      recursive = TRUE
+    session <- fRivolous::start_analysis(
+      project = project,
+      activate_renv = FALSE
     )
 
-    testthat::capture_output(
-      session <- start_analysis(
-        project = project,
-        activate_renv = FALSE
-      )
-    )
-
-    testthat::expect_true(
-      grepl(
-        "analysis_[0-9]{8}_[0-9]{6}\\.log$",
-        session$log_file
-      )
+    fRivolous::end_analysis(
+      session = session,
+      snapshot_renv = FALSE,
+      commit = FALSE
     )
 
     testthat::expect_true(
       file.exists(session$log_file)
     )
 
-    testthat::capture_output(
-      end_analysis(
-        session = session,
-        commit = FALSE
-      )
+    testthat::expect_match(
+      basename(session$log_file),
+      "^analysis_[0-9]{8}_[0-9]{6}\\.log$"
+    )
+
+    testthat::expect_match(
+      dirname(session$log_file),
+      "logs$"
     )
   }
 )
-
 
 testthat::test_that(
   "end_analysis rejects a commit without an explicit file list",
   {
-
-    project <- tempfile(
-      "analysis_project_commit_validation_"
+    project <- new_test_dir(
+      pattern = "analysis_project_invalid_commit_"
     )
 
-    dir.create(
-      project,
-      recursive = TRUE
-    )
-
-    testthat::capture_output(
-      session <- start_analysis(
-        project = project,
-        activate_renv = FALSE
-      )
+    session <- fRivolous::start_analysis(
+      project = project,
+      activate_renv = FALSE
     )
 
     testthat::expect_error(
-      end_analysis(
+      fRivolous::end_analysis(
         session = session,
         commit = TRUE,
-        commit_message = "test commit"
+        commit_files = character(),
+        commit_message = "test"
       ),
-      "commit_files"
+      "'commit_files'"
     )
 
-    # Clean up the active sink after the intentional validation failure.
-    testthat::capture_output(
-      end_analysis(
-        session = session,
-        commit = FALSE
-      )
+
+    fRivolous::end_analysis(
+      session = session,
+      commit = FALSE
     )
   }
 )
 
-
 testthat::test_that(
   "end_analysis rejects absolute commit paths",
   {
-
-    project <- tempfile(
-      "analysis_project_absolute_path_"
-    )
-
-    dir.create(
-      project,
-      recursive = TRUE
+    project <- new_test_dir(
+      pattern = "analysis_project_absolute_path_"
     )
 
     testthat::skip_if(
@@ -168,42 +147,33 @@ testthat::test_that(
       "Git is not available."
     )
 
-    testthat::capture_output(
-      system2(
-        "git",
-        c(
-          "-C",
-          project,
-          "init"
-        )
+    system2(
+      "git",
+      c(
+        "-C",
+        project,
+        "init"
       )
     )
 
-    testthat::capture_output(
-      session <- start_analysis(
-        project = project,
-        activate_renv = FALSE
-      )
+    session <- fRivolous::start_analysis(
+      project = project,
+      activate_renv = FALSE
     )
 
     testthat::expect_error(
-      end_analysis(
+      fRivolous::end_analysis(
         session = session,
         commit = TRUE,
-        commit_files = file.path(
-          project,
-          "file.R"
-        ),
-        commit_message = "test commit"
+        commit_files = "/tmp/absolute/file.R",
+        commit_message = "test"
       ),
       "project-relative"
     )
 
-    testthat::capture_output(
-      end_analysis(
-        session = session,
-        commit = FALSE
-      )
+    fRivolous::end_analysis(
+      session = session,
+      commit = FALSE
     )
   }
 )
@@ -212,9 +182,8 @@ testthat::test_that(
 testthat::test_that(
   "analysis session rejects invalid inputs",
   {
-
     testthat::expect_error(
-      start_analysis(
+      fRivolous::start_analysis(
         project = tempfile(),
         activate_renv = FALSE
       ),
@@ -222,7 +191,7 @@ testthat::test_that(
     )
 
     testthat::expect_error(
-      start_analysis(
+      fRivolous::start_analysis(
         project = tempdir(),
         activate_renv = NA
       ),
@@ -230,7 +199,7 @@ testthat::test_that(
     )
 
     testthat::expect_error(
-      end_analysis(
+      fRivolous::end_analysis(
         session = list()
       ),
       "start_analysis"

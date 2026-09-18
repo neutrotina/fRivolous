@@ -25,7 +25,7 @@
 #' If `log_file` is supplied, a text file containing the timestamp and session
 #' information is written to disk. Progress and completion messages are printed
 #' to the console.
-#'
+#' @export
 #' @examples
 #' session_record <- objective_complete(
 #'   show_session_info = FALSE
@@ -47,8 +47,8 @@ objective_complete <- function(
 ) {
   timestamp <- Sys.time()
 
-  session_text <- capture.output(
-    sessionInfo()
+  session_text <- utils::capture.output(
+    utils::sessionInfo()
   )
 
   if (!is.null(log_file)) {
@@ -121,11 +121,11 @@ objective_complete <- function(
   }
 
   cat(
-    "    >> [✔️] SESSION COMPLETE .................................\n"
+    "    >> [\u2713] SESSION COMPLETE .................................\n"
   )
 
   cat(
-    "    >> ٩(^ᗜ^ )و WELL DONE OPERATOR ...........................\n"
+    "    >> \u0669(^\u15DC^ )\u0648 WELL DONE OPERATOR ...........................\n"
   )
 
   cat(
@@ -141,14 +141,4 @@ objective_complete <- function(
   )
 }
 
-# USAGE
-# objective_complete()
 
-# or
-
-# objective_complete(
-#   log_file = here::here(
-#     "logs",
-#     "analysis_session_info.txt"
-#   )
-# )

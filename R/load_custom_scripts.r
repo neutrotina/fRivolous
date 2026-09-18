@@ -19,7 +19,7 @@
 #' @section Side effects:
 #' Existing scripts are sourced into `.GlobalEnv`. Scripts may therefore create,
 #' modify or remove objects in the global environment.
-#'
+#' @export
 #' @examples
 #' example_script <- tempfile(
 #'   fileext = ".R"
@@ -150,7 +150,7 @@ load_custom_scripts <- function(
   }
 
   cat(
-    "\n    >> [✔️] Custom script load complete.\n"
+    "\n    >> [\u2713] Custom script load complete.\n"
   )
 
   if (length(missing_files) > 0L) {

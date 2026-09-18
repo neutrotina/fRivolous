@@ -1,5 +1,39 @@
-# FUNCTION: SAVE FILE
-
+#' Save a data object to an RDS file
+#'
+#' Saves an object to an RDS file, creating missing parent directories when
+#' necessary. Existing files are protected unless overwriting is explicitly
+#' requested.
+#'
+#' @param df Object to save.
+#' @param filename Destination RDS file path.
+#' @param label Optional label used in progress messages.
+#' @param overwrite Logical; should an existing file be replaced?
+#' @param compress Logical; should the file be compressed
+#'
+#' @return Invisibly returns a list containing:
+#' \describe{
+#'   \item{path}{Expanded destination path.}
+#'   \item{overwritten}{Logical; whether an existing file was replaced.}
+#'   \item{size_mb}{Saved file size in megabytes.}
+#' }
+#'
+#' @section Side effects:
+#' Missing parent directories may be created. If `overwrite = TRUE`, an
+#' existing destination file is replaced.
+#'
+#' @examples
+#' example_file <- file.path(
+#'   tempdir(),
+#'   "save_data_file_example.rds"
+#' )
+#'
+#' result <- save_data_file(
+#'   df = data.frame(value = 1:3),
+#'   filename = example_file,
+#'   overwrite = TRUE
+#' )
+#'
+#' @export
 save_data_file <- function(
     df,
     filename,
@@ -96,7 +130,7 @@ if (was_existing) {
   )
 
   cat(
-    "    >> [✔️] FILE SAVING COMPLETE.\n"
+    "    >> [\u2713] FILE SAVING COMPLETE.\n"
   )
 
   cat(
@@ -123,12 +157,35 @@ if (was_existing) {
   )
 }
 
-# FUNCTION: SAVE DATA SNAPSHOT
-
+#' Save a timestamped data snapshot
+#'
+#' Saves an object as an RDS file using a sanitised object name, timestamp and
+#' version suffix. Missing snapshot directories are created automatically.
+#'
+#' @param df Object to snapshot.
+#' @param df_name Character name used to construct the snapshot filename.
+#' @param snapshot_dir Directory in which the snapshot should be saved.
+#' @return Invisibly returns a list containing the snapshot path, overwrite
+#' status and saved file size.
+#'
+#' @section Side effects:
+#' The snapshot directory may be created and an RDS file is written.
+#'
+#' @examples
+#' snapshot_result <- data_snapshot(
+#'   df = data.frame(
+#'     sample = c("A", "B"),
+#'     value = c(10, 20)
+#'   ),
+#'   df_name = "example_data",
+#'   snapshot_dir = tempdir()
+#' )
+#'
+#' @export
 data_snapshot <- function(
     df,
     df_name = deparse(substitute(df)),
-    snapshot_dir = here::here("snapshots")
+    snapshot_dir = "snapshots"
 ) {
   if (!is.character(df_name) ||
       length(df_name) != 1L ||
@@ -176,6 +233,26 @@ data_snapshot <- function(
     timestamp,
     "_ver.rds"
   )
+
+  safe_name <- gsub(
+  "[^A-Za-z0-9_-]+",
+  "_",
+  trimws(df_name)
+)
+
+safe_name <- gsub(
+  "^_+|_+$",
+  "",
+  safe_name
+)
+
+if (!nzchar(safe_name)) {
+  stop(
+    "'df_name' does not produce a usable filename.",
+    call. = FALSE
+  )
+}
+
 
   full_path <- file.path(
     snapshot_dir,
@@ -261,24 +338,3 @@ if (!nzchar(safe_df_name)) {
     result
   )
 }
-
-
-# USAGE
-# save_data_file(
-#   df = top_secret_data,
-#   filename = here::here(
-#     "results",
-#     "top_sectret_data.rds"
-#   ),
-#   label = "TOP SECRET DATA"
-# )
-
-# data_snapshot(
-#   df = top_secret_data,
-#   df_name = "top_secret_results"
-# )
-# or let it infer the name
-# data_snapshot(
-#  top_secret_data
-# )
-
